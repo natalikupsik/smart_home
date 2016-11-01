@@ -1,15 +1,19 @@
 # coding=utf-8
-from sms import *
-from receive_msg import *
-from control_device import *
 import threading
 import time
+from GUI import *
+import Queue
+
+#данный модуль запускает все процессы и сопоставляет очереди
 
 
+def work(Queue):
+    while (1):
+        if (Queue.empty != False):
+            print QueueOut.get()
 
-receive_sms_thread = Receive()
-main_device_thread = Control_device()
+QueueIn = Queue.Queue()
+QueueOut = Queue.Queue()
+threading.Thread(target=work, args=(QueueOut,)).start()
+StartGUI(QueueIn,QueueOut)
 
-threading.Thread(target=start, args=(receive_sms_thread, main_device_thread)).start()
-threading.Thread(target=receive_sms_thread.work, args=()).start()
-threading.Thread(target=main_device_thread.work, args=()).start()
