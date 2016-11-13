@@ -1,8 +1,7 @@
 # coding=utf-8
-import threading
-import time
+
 from GUI import *
-from gsm import *
+from gsm import  *
 import Queue
 
 #данный модуль запускает все процессы и сопоставляет очереди
@@ -19,5 +18,11 @@ threading.Thread(target=work, args=(QueueOut,)).start()
 StartGUI(QueueIn,QueueOut)
 '''
 
-InitModem('/dev/cu.HUAWEIMobile-Pcui')
-SendMsg("+79062493959","ura")
+QueueIn = Queue.Queue()
+QueueOut = Queue.Queue()
+
+StartModem(QueueIn,QueueOut,'/dev/cu.HUAWEIMobile-Pcui','/dev/cu.HUAWEIMobile-Modem')
+
+
+
+
