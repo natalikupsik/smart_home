@@ -5,17 +5,32 @@
 class Message:
     # Инициализация полей сообщения
     def __init__(self):
-        self.number = 0
+        self.recipient = 0
         self.text = 0
 
-    def Print_info(self):
+    def PrintInfo(self):
         print('\n')
         print('Message')
-        print('number: ' + str(self.number))
+        print('number: ' + str(self.recipient))
         print('text: ' + str(self.text))
 
+    def CopyTo(self, msg):
+        msg.number = self.recipient
+        msg.text   = self.text
 
-def copy_msg(msg_destination, msg_source):
-        msg_destination.number = msg_source.number
-        msg_destination.text = msg_source.text
-        msg_destination.token = msg_source.token
+class Sensor:
+    def __init__(self, type, number, value):
+        self.type = type
+        self.number = number
+        self.value = value
+
+class Command:
+    def __init__(self):
+        self.cmd = "None"
+        self.type = "None"
+        self.data = "None"
+        self.number = 0
+
+    def PrintInfo(self):
+        print('\n')
+        print('Command: ' + self.cmd + ' ' + self.type + ' ' + self.number)

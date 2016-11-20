@@ -9,7 +9,7 @@ from TYPES import *
 #обработка входящих смс
 class ModemToReceive:
 
-    def __init__(self, QueuePortIn,QueueOut):
+    def __init__(self):
         global  SerialPortIN
         SerialPortIN = serial.Serial('/dev/cu.HUAWEIMobile-Pcui', 9600, timeout=0)
         SerialPortIN.write('AT+CMGF=1\r')
@@ -22,24 +22,26 @@ class ModemToReceive:
              NumberOfCharactersReadyToRead = SerialPortIN.inWaiting()  # Get the number of characters ready to be read
              ReceivedData = SerialPortIN.read(NumberOfCharactersReadyToRead)
              String = str(ReceivedData)
+
              String = String.replace('"',',')
-             ListOfReceivedData = re.split("\\r|,| |\n",String)
-             ReceivedMsg.number = 0
+             ListOfReceivedData = re.split("\\r|,|\n",String)
+             ReceivedMsg.recipient = 0
              ReceivedMsg.text = 0
              for element in ListOfReceivedData:
-                 if element == '+CMT:':
-                     ReceivedMsg.number = ListOfReceivedData[(ListOfReceivedData.index(element)) + 2]
-                     ReceivedMsg.text = ListOfReceivedData[(ListOfReceivedData.index(element)) + 10]
-                     ReceivedMsg.Print_info()
+                 if element == '+CMT: ':
+                     ReceivedMsg.recipient = ListOfReceivedData[(ListOfReceivedData.index(element)) + 1]
+                     ReceivedMsg.text = ListOfReceivedData[(ListOfReceivedData.index(element)) + 9]
+                     ReceivedMsg.PrintInfo()
+
 
 
              return ReceivedMsg
 
 class ModemToSend:
 
-    def __init__(self, QueueIn,QueuePortOut):
+    def __init__(self):
         global  SerialPortOUT
-        SerialPortOUT = serial.Serial(QueuePortOut, 9600, timeout=5)
+        SerialPortOUT = serial.Serial('/dev/cu.HUAWEIMobile-Pcui', 9600, timeout=5)
         SerialPortOUT.write('ATZ\r')
         time.sleep(1)
         SerialPortOUT.write('AT+CMGF=1\r')
@@ -53,11 +55,11 @@ class ModemToSend:
         SerialPortOUT.write(chr(26))
 
 
-def StartModem(QueueIn,QueueOut,QueuePortIN,QueuePortOUT):
-    ModemSend = ModemToSend(QueueIn,QueuePortOUT)
-    ModemReceive = ModemToReceive(QueuePortIN,QueueOut)
+def StartModem(QueueIn,QueueOut):
+    ModemSend = ModemToSend()
+    ModemReceive = ModemToReceive()
 
-    while 1:
+    while True:
         if QueueIn.empty() == False:
             MsgToSend = QueueIn.get()
             ModemSend.SendMsg(MsgToSend.recipient,MsgToSend.text)
@@ -65,7 +67,7 @@ def StartModem(QueueIn,QueueOut,QueuePortIN,QueuePortOUT):
 
         MsgReceived = Message()
         MsgReceived = ModemReceive.ReceiveMsg()
-        if MsgReceived.number != 0:
+        if MsgReceived.recipient != 0:
             QueueOut.put(MsgReceived)
 
 

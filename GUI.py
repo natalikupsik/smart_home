@@ -1,32 +1,43 @@
 # coding=utf-8
 from Tkinter import *
+import threading
+import time
+from TYPES import *
 
-def UpdateTempValues(frame1, frame2, frame3, frame4):
+def UpdateTempValues(frame1, frame2, frame3, frame4, QueueIn, QueueOut):
 
-    #эти данные кладутся в выходную очередь по запросу из входной очереди (из модуля ввода вывода)
-    global  temperature1
-    global  temperature2
-    global  temperature3
-    global  temperature4
+        if QueueIn.empty() == False:
+            temperature_sensor_request = QueueIn.get()
+            if temperature_sensor_request.type == "temp":
+                print "yes"
+                try:
+                    if temperature_sensor_request.number == 1:
+                        temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,int(frame1.get()))
+                    if temperature_sensor_request.number == 2:
+                        temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,int(frame2.get()))
+                    if temperature_sensor_request.number == 3:
+                        temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,int(frame3.get()))
+                    if temperature_sensor_request.number == 4:
+                        temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,int(frame4.get()))
 
-    try:
-        temperature1 = int(frame1.get())
-        temperature2 = int(frame2.get())
-        temperature3 = int(frame3.get())
-        temperature4 = int(frame4.get())
+                    QueueOut.put(temperature_sensor_response)
 
-    except Exception:
-            print("No value of temperature entered")
+                except Exception:
+                    pass
 
-    else:
-        print temperature1
-        print temperature2
-        print temperature3
-        print temperature4
+
+
+def StartTemperatureSensors(frame1, frame2, frame3, frame4,QueueIn, QueueOut):
+    while True:
+        UpdateTempValues(frame1, frame2, frame3, frame4,QueueIn, QueueOut)
+
+
+
 
 
 def MoveEvent(QueueOut, MoveSensorId):
-    QueueOut.put(('Attention on move sensor #' + str(MoveSensorId)))
+    move_sensor = Sensor("move",MoveSensorId,"on")
+    QueueOut.put(move_sensor)
 
 def StartGUI(QueueIn,QueueOut):
 
@@ -66,10 +77,6 @@ def StartGUI(QueueIn,QueueOut):
     temp4.grid(row=8,column=2,padx=(10,10))
 
 
-
-    UpdateTempValueButton = Button(frame, text="Update temperatures", command= lambda: UpdateTempValues(temp1, temp2, temp3, temp4)).grid(row=10, column=1, padx=(80, 0))
-
-
     #данные о датчике движения будут только класться в выходную очередь
 
     Move = Button(frame, text="Move sensor #1", command= lambda: MoveEvent(QueueOut,1)).grid(row=2, column=4, padx=(80, 0))
@@ -77,9 +84,11 @@ def StartGUI(QueueIn,QueueOut):
     Move = Button(frame, text="Move sensor #3", command= lambda: MoveEvent(QueueOut,3)).grid(row=6, column=4, padx=(80, 0))
     Move = Button(frame, text="Move sensor #4", command= lambda: MoveEvent(QueueOut,4)).grid(row=8, column=4, padx=(80, 0))
 
-    #данные будут только получаться из входной очереди
-    Relay = Label(frame, text= ('Switch relay #1')).grid(row=10,column=4,padx=(100,10))
+    rf = threading.Thread(target=StartTemperatureSensors, args=(temp1, temp2, temp3, temp4,QueueIn, QueueOut,))
+    rf.start()
 
     root.mainloop()
+
+
 
 
