@@ -7,7 +7,7 @@ import re
 def ParseSMS(Msg):
 
         command = Command()
-        command.number = Msg.recipient
+        command.recipient = Msg.recipient
         SMStext = str(Msg.text)
         SMSlist = re.split(" ",SMStext)
         if SMSlist.__len__() != 4:
@@ -68,6 +68,9 @@ def StartProtol(QueueInFromGSM, QueueOutToMainDevice,QueueInFromMainDevice, Queu
             MSGgetFromMainDevice = Command()
             MSGgetFromMainDevice = QueueInFromMainDevice.get()
             MSGtoGSM = Message()
-            MSGtoGSM.recipient = MSGgetFromMainDevice.number
-            MSGtoGSM.text = MSGgetFromMainDevice.cmd + ' ' + MSGgetFromMainDevice.type + ' ' + MSGgetFromMainDevice.data
+            MSGtoGSM.recipient = MSGgetFromMainDevice.recipient
+            if (MSGgetFromMainDevice.cmd != "cmd error"):
+                MSGtoGSM.text = MSGgetFromMainDevice.cmd + ' ' + MSGgetFromMainDevice.type + ' ' + MSGgetFromMainDevice.data
+            else:
+                MSGtoGSM.text = MSGgetFromMainDevice.data
             QueueOutToGSM.put(MSGtoGSM)

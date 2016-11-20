@@ -29,8 +29,19 @@ class Command:
         self.cmd = "None"
         self.type = "None"
         self.data = "None"
-        self.number = 0
+        self.recipient = 0
 
     def PrintInfo(self):
         print('\n')
-        print('Command: ' + self.cmd + ' ' + self.type + ' ' + self.number)
+        print('Command: ' + self.cmd + ' ' + self.type + ' ' + self.recipient)
+
+class CommandIO:
+    def __init__(self):
+        self.cmd = "None" #request/response
+        self.type = "None"
+        self.number = "None"
+        self.data = "None"
+
+    def PrintInfo(self):
+        print('\n')
+        print('CommandIO: ' + self.cmd + ' ' + self.type + ' ' + str(self.number) + ' ' + self.data)

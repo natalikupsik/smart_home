@@ -9,21 +9,24 @@ def UpdateTempValues(frame1, frame2, frame3, frame4, QueueIn, QueueOut):
         if QueueIn.empty() == False:
             temperature_sensor_request = QueueIn.get()
             if temperature_sensor_request.type == "temp":
-                print "yes"
+
                 try:
-                    if temperature_sensor_request.number == 1:
+                    if temperature_sensor_request.number == 0:
                         temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,int(frame1.get()))
-                    if temperature_sensor_request.number == 2:
+                    if temperature_sensor_request.number == 1:
                         temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,int(frame2.get()))
-                    if temperature_sensor_request.number == 3:
+                    if temperature_sensor_request.number == 2:
                         temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,int(frame3.get()))
-                    if temperature_sensor_request.number == 4:
+                    if temperature_sensor_request.number == 3:
                         temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,int(frame4.get()))
 
+                except Exception:
+                    temperature_sensor_response = Sensor("temp", temperature_sensor_request.number,"None")
+                    QueueOut.put(temperature_sensor_response)
+                else:
                     QueueOut.put(temperature_sensor_response)
 
-                except Exception:
-                    pass
+
 
 
 
@@ -79,10 +82,10 @@ def StartGUI(QueueIn,QueueOut):
 
     #данные о датчике движения будут только класться в выходную очередь
 
-    Move = Button(frame, text="Move sensor #1", command= lambda: MoveEvent(QueueOut,1)).grid(row=2, column=4, padx=(80, 0))
-    Move = Button(frame, text="Move sensor #2", command= lambda: MoveEvent(QueueOut,2)).grid(row=4, column=4, padx=(80, 0))
-    Move = Button(frame, text="Move sensor #3", command= lambda: MoveEvent(QueueOut,3)).grid(row=6, column=4, padx=(80, 0))
-    Move = Button(frame, text="Move sensor #4", command= lambda: MoveEvent(QueueOut,4)).grid(row=8, column=4, padx=(80, 0))
+    Move = Button(frame, text="Move sensor #1", command= lambda: MoveEvent(QueueOut,0)).grid(row=2, column=4, padx=(80, 0))
+    Move = Button(frame, text="Move sensor #2", command= lambda: MoveEvent(QueueOut,1)).grid(row=4, column=4, padx=(80, 0))
+    Move = Button(frame, text="Move sensor #3", command= lambda: MoveEvent(QueueOut,2)).grid(row=6, column=4, padx=(80, 0))
+    Move = Button(frame, text="Move sensor #4", command= lambda: MoveEvent(QueueOut,3)).grid(row=8, column=4, padx=(80, 0))
 
     rf = threading.Thread(target=StartTemperatureSensors, args=(temp1, temp2, temp3, temp4,QueueIn, QueueOut,))
     rf.start()
