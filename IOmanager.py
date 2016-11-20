@@ -17,7 +17,7 @@ def StartIOmanager(QueueInFromGUI, QueueInFromMainDevice, QueueOutToGUI, QueueOu
                 CmdAction.cmd = "response"
                 CmdAction.type = "move"
                 CmdAction.number = sensor.number
-                CmdAction.data = "action"
+                CmdAction.data = "active"
                 QueueOutToMainDevice.put(CmdAction)
             elif (sensor.type == "temp"):
                 SensorsTempValues[sensor.number] = sensor.value

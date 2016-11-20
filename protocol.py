@@ -41,7 +41,7 @@ def ParseSMS(Msg):
 
         elif SMSlist[0] == "get":
             if SMSlist[1] == "sensor":
-                if ((SMSlist[2] == "temp") or (SMSlist[2] == "move")):
+                if (SMSlist[2] == "temp"):
                     command.cmd = "get sensor"
                     command.type = SMSlist[2]
                     command.data = SMSlist[3]
