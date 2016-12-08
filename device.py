@@ -213,12 +213,12 @@ def StartDevice(QueueInFromProtocol, QueueInFromIO, QueueOutToProtocol, QueueOut
             if CmdIO.type == "temp":
                 CmdResponseInfo.cmd = "Request"
                 CmdResponseInfo.type = CmdIO.type
-                CmdResponseInfo.data = TempSensorsList[CmdIO.number] + " value is" + CmdIO.data
+                CmdResponseInfo.data = TempSensorsList[CmdIO.number] + " value is " + CmdIO.data
 
                 for phone in TelephonesList:
                     if phone != "None":
                         CmdResponseInfo.recipient = phone
-                        QueueOutToProtocol.put(CmdResponse)
+                        QueueOutToProtocol.put(CmdResponseInfo)
 
             elif CmdIO.type == "move":
                 if MoveSensorsList[CmdIO.number] != "None":
@@ -226,7 +226,7 @@ def StartDevice(QueueInFromProtocol, QueueInFromIO, QueueOutToProtocol, QueueOut
                     CmdResponseInfo.type = CmdIO.type
                     CmdResponseInfo.data = MoveSensorsList[CmdIO.number] + "value is " + CmdIO.data
 
-            for phone in TelephonesList:
+                for phone in TelephonesList:
                     if phone != "None":
                         CmdResponseInfo.recipient = phone
                         QueueOutToProtocol.put(CmdResponseInfo)
